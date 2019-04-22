@@ -1,0 +1,81 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>Azure-Storage-SDK-V10-Java</groupId>
+  <artifactId>azureBlob</artifactId>
+  <version>0.1</version>
+  <repositories>
+    <repository>
+      <id>commicrosoftazure-2334</id>
+      <name>commicrosoftazure-2334</name>
+      <url>https://oss.sonatype.org/content/repositories/commicrosoftazure-2334</url>
+    </repository>
+  </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+          <compilerArgument>-Xlint:unchecked</compilerArgument>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.4.0</version>
+        <configuration>
+          <mainClass>quickstart.Quickstart</mainClass>
+        </configuration>
+      </plugin>
+      
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.microsoft.azure</groupId>
+      <artifactId>azure-storage-blob</artifactId>
+      <version>11.0.0</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.google.apis</groupId>
+      <artifactId>google-api-services-drive</artifactId>
+      <version>v3-rev160-1.25.0</version>
+    </dependency>
+ 
+	 <dependency>
+	    <groupId>com.google.api-client</groupId>
+	    <artifactId>google-api-client-extensions</artifactId>
+	    <version>1.6.0-beta</version>
+	</dependency>
+	
+	<dependency>
+    <groupId>com.google.api-client</groupId>
+    <artifactId>google-api-client-java6</artifactId>
+    <version>1.28.0</version>
+    </dependency>
+
+    <dependency>
+    <groupId>com.google.oauth-client</groupId>
+    <artifactId>google-oauth-client-jetty</artifactId>
+    <version>1.11.0-beta</version>
+    </dependency>
+    
+	<dependency>
+	    <groupId>com.google.http-client</groupId>
+	    <artifactId>google-http-client</artifactId>
+	    <version>1.16.0-rc</version>
+	</dependency>
+
+
+  </dependencies>
+  
+</project>
