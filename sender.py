@@ -2,7 +2,8 @@ import urllib.request
 import json
 import sys
 
-data = {
+def MLCall(filename):
+    data = {
         "Inputs": {
                 "filePath":
                 [
@@ -9421,68 +9422,70 @@ data = {
     "GlobalParameters":  {
     }
 }
-filename = sys.argv[1]
-f = open(filename,"r+")
-x = str(f.readline())
+#filename = sys.argv[1]
+    f = open(filename,"r+")
+    x = str(f.readline())
 
-temp1=[]
-str1 = str(x)
-temp1 = str1.split(',')
-print(temp1)
-for a in range(len(temp1)):
-    print(data["Inputs"]["filePath"][0]['f_'+str(a)])
-    data["Inputs"]["filePath"][0]['f_'+str(a)] = temp1[a]
+    temp1=[]
+    str1 = str(x)
+    temp1 = str1.split(',')
+    print(temp1)
+    for a in range(len(temp1)):
+        #print(data["Inputs"]["filePath"][0]['f_'+str(a)])
+        data["Inputs"]["filePath"][0]['f_'+str(a)] = temp1[a]
 
 
-body = str.encode(json.dumps(data))
+    body = str.encode(json.dumps(data))
 
-url = 'https://ussouthcentral.services.azureml.net/workspaces/58fc2833f5c5454aa816fa9aa601fd9b/services/7940c0f093604c9c9ed20c9097dbb5cf/execute?api-version=2.0&format=swagger'
-api_key = 'FxvR4WrkJawhLylvgy8xDbU9yg5V4nJuOSpQUgKwJuumChAwgYnqHLaoU6hcezbUT81GHxHpne9ud3T09IF/BQ==' # Replace this with the API key for the web service
-headers = {'Content-Type':'application/json', 'Authorization':('Bearer '+ api_key)}
+    url = 'https://ussouthcentral.services.azureml.net/workspaces/58fc2833f5c5454aa816fa9aa601fd9b/services/7940c0f093604c9c9ed20c9097dbb5cf/execute?api-version=2.0&format=swagger'
+    api_key = 'FxvR4WrkJawhLylvgy8xDbU9yg5V4nJuOSpQUgKwJuumChAwgYnqHLaoU6hcezbUT81GHxHpne9ud3T09IF/BQ==' # Replace this with the API key for the web service
+    headers = {'Content-Type':'application/json', 'Authorization':('Bearer '+ api_key)}
 
-req = urllib.request.Request(url, body, headers)
+    req = urllib.request.Request(url, body, headers)
+    output = []
+    try:
+        response = urllib.request.urlopen(req)
 
-try:
-    response = urllib.request.urlopen(req)
+        result = str(response.read())
+        res = ''
+        i=0
+        while i <(len(result)):
 
-    result = str(response.read())
-    res = ''
-    i=0
-    while i <(len(result)):
-
-        if result[i]=='C':
-            while result[i]!='"':
-                if result[i]=='\\':
+            if result[i]=='C':
+                while result[i]!='"':
+                    if result[i]=='\\':
+                        i+=1
+                        continue
+                    res+=result[i]
                     i+=1
-                    continue
+                i+=1
+                while result[i]!='"':
+                    if result[i]=='\\':
+                        i+=1
+                        continue
+                    res+=result[i]
+                    i+=1
+                if result[i]=='"':
+                    i+=1
+            else:
                 res+=result[i]
                 i+=1
-            i+=1
-            while result[i]!='"':
-                if result[i]=='\\':
-                    i+=1
-                    continue
-                res+=result[i]
-                i+=1
-            if result[i]=='"':
-                i+=1
-        else:
-            res+=result[i]
-            i+=1
 
 
-    result=res[2:len(res)-1]
-    #print(result)
-    result = json.loads(result)
+        result=res[2:len(res)-1]
+        #print(result)
+        result = json.loads(result)
 
-    #print(result.keys())
-    #print(result)
-    for a in result['Results']['output1'][0].keys():
-        if 'f_' not in a:
-            print(a,':',(result['Results']['output1'][0][a]))
-except urllib.error.HTTPError as error:
-    print("The request failed with status code: " + str(error.code))
+        #print(result.keys())
+        #print(result)
+        for a in result['Results']['output1'][0].keys():
+            if 'f_' not in a:
+                output.append(str(a)+':'+str(result['Results']['output1'][0][a]))
+        return output
+    except urllib.error.HTTPError as error:
+        print("The request failed with status code: " + str(error.code))
 
-    # Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
-    print(error.info())
-    print(json.loads(error.read().decode("utf8", 'ignore')))
+        # Print the headers - they include the requert ID and the timestamp, which are useful for debugging the failure
+        print(error.info())
+        print(json.loads(error.read().decode("utf8", 'ignore')))
+        return output
