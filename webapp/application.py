@@ -31,22 +31,19 @@ def showupload():
 @app.route('/uploader', methods = ['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        f = request.files['image_file']
-        f.save('image.jpg')
-        img = cv2.imread('image.jpg')
-        img = cv2.resize(img,(56,56))
+        data = request.form['imgCSVData']
+        t=data.split(",")
         temp = []
-        for k in range(0,3):
-            for i in range(0,56):
-                for j in range(0,56):
-                    temp.append(" "+str(img[i][j][k]))
+        for elem in t:
+            temp.append(" "+str(elem))
+        
 
         csv_file = open('image.csv', 'w')
         w = csv.writer(csv_file, delimiter = ',')
         w.writerow(temp)
         csv_file.close()
         result_data=sender.MLCall('image.csv')
-        #print(result_data)
+        print(result_data)
         temp=result_data.pop().split(":")
         
         result_label=temp[1]
@@ -61,20 +58,16 @@ def showaddcow():
 @app.route('/addcow', methods = ['GET', 'POST'])
 def showadd():
     if request.method == 'POST':
-        f = request.files['cow_image']
+        f = request.form['imgCSVData']
         label=request.form['cow_id']
         print(request.form['cow_id'])
         filename='img_'+label+'_'+str(random.randint(1000000,9999999))+'.csv'
-        f.save(secure_filename(f.filename))
-        img = cv2.imread(secure_filename(f.filename))
-        img = cv2.resize(img,(56,56))
         temp = []
         temp.append(label)
-        for k in range(0,3):
-            for i in range(0,56):
-                for j in range(0,56):
-                    temp.append(img[i][j][k])
-        csv_file = open(filename, 'wb')
+        for elem in f:
+            temp.append(" "+str(elem))
+
+        csv_file = open(filename, 'w')
         w = csv.writer(csv_file, delimiter = ',')
         w.writerow(temp)
         csv_file.close()
