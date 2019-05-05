@@ -9,6 +9,7 @@ import random
 from azure.storage.blob import BlockBlobService
 import os
 import sender
+import model_validation
 
 blob_account_name = 'cowimagestore'
 blob_account_key = 'zgjzOJxE3t0+NeVSz6zuc4ZL4o++VPLeTtYDA4NEvR8Emkjt/YwdNZc+TUzr8eei7+SQnNSsrerDsRRq5ViTIg=='
@@ -42,13 +43,23 @@ def upload_file():
         w = csv.writer(csv_file, delimiter = ',')
         w.writerow(temp)
         csv_file.close()
-        result_data=sender.MLCall('image.csv')
-        print(result_data)
-        temp=result_data.pop().split(":")
+        check=model_validation.model_call('img_740_81.csv')
+
+        print(check.index('Yes'))
+        if check.index('Yes')!=-1:
+
+
+            result_data=sender.MLCall('image.csv')
+            print(result_data)
+            temp=result_data.pop().split(":")
+            
+            result_label=temp[1]
+            
+            return render_template('results.html', result=result_data,label=result_label)
         
-        result_label=temp[1]
-        
-        return render_template('results.html', result=result_data,label=result_label)
+        else:
+            return render_template('error.html')
+
 
 @app.route('/uploadcow')
 def showaddcow():
