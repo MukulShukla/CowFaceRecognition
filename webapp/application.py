@@ -32,34 +32,39 @@ def showupload():
 @app.route('/uploader', methods = ['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        data = request.form['imgCSVData']
-        t=data.split(",")
+        f = request.files['image_file']
+        f.save('image.jpg')
+        img = cv2.imread('image.jpg')
+        img = cv2.resize(img,(56,56))
         temp = []
-        for elem in t:
-            temp.append(" "+str(elem))
-        
+        for k in range(0,3):
+            for i in range(0,56):
+                for j in range(0,56):
+                    temp.append(" "+str(img[i][j][k]))
 
         csv_file = open('image.csv', 'w')
         w = csv.writer(csv_file, delimiter = ',')
         w.writerow(temp)
         csv_file.close()
-        check=model_validation.model_call('img_740_81.csv')
-
-        print(check.index('Yes'))
-        if check.index('Yes')!=-1:
+        check=model_validation.model_call('image.csv')
+        check=str(check)
+        #print(str(check))
+        try: 
+            check.index('Yes')
 
 
             result_data=sender.MLCall('image.csv')
-            print(result_data)
+            print(type(result_data))
             temp=result_data.pop().split(":")
             
             result_label=temp[1]
+            print(result_label)
+            #print(result_data)
             
             return render_template('results.html', result=result_data,label=result_label)
         
-        else:
+        except:
             return render_template('error.html')
-
 
 @app.route('/uploadcow')
 def showaddcow():
@@ -69,24 +74,42 @@ def showaddcow():
 @app.route('/addcow', methods = ['GET', 'POST'])
 def showadd():
     if request.method == 'POST':
-        f = request.form['imgCSVData']
+        f = request.files['cow_image']
         label=request.form['cow_id']
         print(request.form['cow_id'])
         filename='img_'+label+'_'+str(random.randint(1000000,9999999))+'.csv'
+        f.save(secure_filename(f.filename))
+        img = cv2.imread(secure_filename(f.filename))
+        img = cv2.resize(img,(56,56))
         temp = []
+        temp2=[]
         temp.append(label)
-        for elem in f:
-            temp.append(" "+str(elem))
-
+        for k in range(0,3):
+            for i in range(0,56):
+                for j in range(0,56):
+                    temp.append(img[i][j][k])
+                    temp2.append(img[i][j][k])
         csv_file = open(filename, 'w')
         w = csv.writer(csv_file, delimiter = ',')
         w.writerow(temp)
         csv_file.close()
-        blobservice = BlockBlobService(account_name = blob_account_name,account_key = blob_account_key)
-        
-        local_file_name =filename
-        full_path_to_file =os.path.join("", local_file_name)
+        csv_file = open('check.csv', 'w')
+        w = csv.writer(csv_file, delimiter = ',')
+        w.writerow(temp2)
+        csv_file.close()
+        check=model_validation.model_call('check.csv')
+        check=str(check)
+        try:
+            check.index('Yes')
 
-        blobservice.create_blob_from_path(my_container, filename, full_path_to_file, if_none_match=True)
-        return render_template('success.html')
+            blobservice = BlockBlobService(account_name = blob_account_name,account_key = blob_account_key)
+            
+            local_file_name =filename
+            full_path_to_file =os.path.join("", local_file_name)
+
+            blobservice.create_blob_from_path(my_container, filename, full_path_to_file, if_none_match=True)
+            return render_template('success.html')
+        except:
+            return render_template('error.html')
+
 	

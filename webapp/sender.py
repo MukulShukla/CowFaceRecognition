@@ -8,6 +8,7 @@ def MLCall(filename):
                 "filePath":
                 [
                     {
+                            'Column 1': "1",
                             'f_0': "",
                             'f_1': "",
                             'f_2': "",
@@ -9430,11 +9431,12 @@ def MLCall(filename):
     str1 = str(x)
     temp1 = str1.split(',')
     #print(temp1)
+
     for a in range(len(temp1)):
         #print(data["Inputs"]["filePath"][0]['f_'+str(a)])
         data["Inputs"]["filePath"][0]['f_'+str(a)] = temp1[a]
 
-
+    #print(len(temp1))
     body = str.encode(json.dumps(data))
 
     url = 'https://ussouthcentral.services.azureml.net/workspaces/58fc2833f5c5454aa816fa9aa601fd9b/services/7940c0f093604c9c9ed20c9097dbb5cf/execute?api-version=2.0&format=swagger'
@@ -9451,7 +9453,7 @@ def MLCall(filename):
         i=0
         while i <(len(result)):
 
-            if result[i]=='C':
+            if result[i]=='C' and result[i+1]=='l':
                 while result[i]!='"':
                     if result[i]=='\\':
                         i+=1
@@ -9479,9 +9481,8 @@ def MLCall(filename):
         #print(result.keys())
         #print(result)
         for a in result['Results']['output1'][0].keys():
-            if 'f_' not in a:
+            if ('f_' not in a) and ('Column' not in a):
                 output.append(str(a)+':'+str(result['Results']['output1'][0][a]))
-        print(output)
         return output
     except urllib.error.HTTPError as error:
         print("The request failed with status code: " + str(error.code))
@@ -9490,4 +9491,5 @@ def MLCall(filename):
         print(error.info())
         print(json.loads(error.read().decode("utf8", 'ignore')))
         return output
+
 #MLCall(str(sys.argv[1]))
